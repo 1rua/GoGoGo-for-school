@@ -48,4 +48,8 @@ class SharedRouteDetailEnvelope(BaseModel):
 
 
 class SharedRouteAdminListEnvelope(BaseModel):
+    page: int
+    pageSize: int
+    total: int
+    totalPages: int
     items: list[SharedRouteDetailResponse]

@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 
+from sqlalchemy import func, or_
 from sqlalchemy.orm import Session, selectinload
 
 from app.application.interfaces.shared_route_repository import SharedRouteRepository
@@ -42,6 +43,40 @@ class SharedRouteSqlRepository(SharedRouteRepository):
             .all()
         )
         return [self._to_detail_response(row) for row in rows]
+
+    def search_route_details(
+        self,
+        query: str,
+        privacy_mode: str,
+        page: int,
+        page_size: int,
+    ) -> tuple[list[SharedRouteDetailResponse], int]:
+        statement = self._db.query(SharedRouteModel).options(selectinload(SharedRouteModel.points))
+
+        normalized_query = (query or "").strip()
+        if normalized_query:
+            like_query = f"%{normalized_query}%"
+            statement = statement.filter(
+                or_(
+                    SharedRouteModel.id.like(like_query),
+                    SharedRouteModel.name.like(like_query),
+                )
+            )
+
+        if privacy_mode == "private":
+            statement = statement.filter(SharedRouteModel.privacy_mode.is_(True))
+        elif privacy_mode == "public":
+            statement = statement.filter(SharedRouteModel.privacy_mode.is_(False))
+
+        total = statement.with_entities(func.count(SharedRouteModel.id)).scalar() or 0
+        rows = (
+            statement
+            .order_by(SharedRouteModel.created_at.desc())
+            .offset((page - 1) * page_size)
+            .limit(page_size)
+            .all()
+        )
+        return [self._to_detail_response(row) for row in rows], total
 
     def create_route(self, payload: CreateSharedRouteRequest) -> SharedRouteDetailResponse:
         now = int(datetime.now(timezone.utc).timestamp() * 1000)

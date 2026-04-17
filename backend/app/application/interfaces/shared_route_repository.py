@@ -17,6 +17,16 @@ class SharedRouteRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    def search_route_details(
+        self,
+        query: str,
+        privacy_mode: str,
+        page: int,
+        page_size: int,
+    ) -> tuple[list[SharedRouteDetailResponse], int]:
+        raise NotImplementedError
+
+    @abstractmethod
     def create_route(self, payload: CreateSharedRouteRequest) -> SharedRouteDetailResponse:
         raise NotImplementedError
 

@@ -51,10 +51,26 @@ def admin_me(request: Request):
 
 
 @router.get("/routes", response_model=SharedRouteAdminListEnvelope)
-def admin_list_routes(request: Request):
+def admin_list_routes(
+    request: Request,
+    q: str = "",
+    privacyMode: str = "all",
+    page: int = 1,
+    pageSize: int = 10,
+):
     require_admin_session(request)
     route_service = AdminRouteService(request.state.route_repository)
-    return SharedRouteAdminListEnvelope(items=route_service.list_routes())
+    page = max(page, 1)
+    pageSize = min(max(pageSize, 1), 100)
+    items, total = route_service.search_routes(q, privacyMode, page, pageSize)
+    total_pages = (total + pageSize - 1) // pageSize if total else 0
+    return SharedRouteAdminListEnvelope(
+        page=page,
+        pageSize=pageSize,
+        total=total,
+        totalPages=total_pages,
+        items=items,
+    )
 
 
 @router.put("/routes/{route_id}", response_model=SharedRouteDetailEnvelope)
@@ -86,10 +102,25 @@ def admin_delete_route(route_id: str, request: Request):
 
 
 @router.get("/nfc", response_model=SharedNfcListEnvelope)
-def admin_list_nfc(request: Request):
+def admin_list_nfc(
+    request: Request,
+    q: str = "",
+    page: int = 1,
+    pageSize: int = 10,
+):
     require_admin_session(request)
     nfc_service = AdminNfcService(request.state.nfc_repository)
-    return SharedNfcListEnvelope(items=nfc_service.list_entries())
+    page = max(page, 1)
+    pageSize = min(max(pageSize, 1), 100)
+    items, total = nfc_service.search_entries(q, page, pageSize)
+    total_pages = (total + pageSize - 1) // pageSize if total else 0
+    return SharedNfcListEnvelope(
+        page=page,
+        pageSize=pageSize,
+        total=total,
+        totalPages=total_pages,
+        items=items,
+    )
 
 
 @router.put("/nfc/{entry_id}", response_model=SharedNfcEnvelope)

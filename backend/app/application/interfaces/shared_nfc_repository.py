@@ -13,6 +13,15 @@ class SharedNfcRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    def search_entries(
+        self,
+        query: str,
+        page: int,
+        page_size: int,
+    ) -> tuple[list[SharedNfcResponse], int]:
+        raise NotImplementedError
+
+    @abstractmethod
     def update_entry(self, entry_id: str, payload: CreateSharedNfcRequest) -> SharedNfcResponse | None:
         raise NotImplementedError
 

@@ -10,6 +10,14 @@ class AdminNfcService:
     def list_entries(self) -> list[SharedNfcResponse]:
         return self._repository.list_entries()
 
+    def search_entries(
+        self,
+        query: str,
+        page: int,
+        page_size: int,
+    ) -> tuple[list[SharedNfcResponse], int]:
+        return self._repository.search_entries(query, page, page_size)
+
     def update_entry(self, entry_id: str, payload: CreateSharedNfcRequest) -> SharedNfcResponse:
         entry = self._repository.update_entry(entry_id, payload)
         if entry is None:

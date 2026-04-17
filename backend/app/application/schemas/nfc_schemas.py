@@ -18,6 +18,10 @@ class SharedNfcResponse(BaseModel):
 
 
 class SharedNfcListEnvelope(BaseModel):
+    page: int = 1
+    pageSize: int = 10
+    total: int = 0
+    totalPages: int = 0
     items: list[SharedNfcResponse]
 
 

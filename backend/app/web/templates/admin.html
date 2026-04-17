@@ -360,8 +360,24 @@
                         <button id="refresh-button" class="ghost {{ '' if authenticated else 'hidden' }}" type="button">刷新列表</button>
                     </div>
 
+                    <div id="filter-bar" class="card-actions {{ '' if authenticated else 'hidden' }}" style="margin-bottom: 14px;">
+                        <input id="search-keyword" type="text" placeholder="输入关键词搜索" style="flex: 1; min-width: 220px;">
+                        <select id="privacy-filter" style="width: 160px;">
+                            <option value="all">全部路线</option>
+                            <option value="public">仅公开路线</option>
+                            <option value="private">仅隐私路线</option>
+                        </select>
+                        <select id="page-size" style="width: 120px;">
+                            <option value="10">10 / 页</option>
+                            <option value="20">20 / 页</option>
+                            <option value="50">50 / 页</option>
+                        </select>
+                        <button id="search-button" class="primary" type="button">搜索</button>
+                    </div>
+
                     <div id="panel-status" class="status"></div>
                     <div id="panel-content" class="grid"></div>
+                    <div id="panel-pagination" class="card-actions hidden" style="margin-top: 14px; justify-content: flex-end;"></div>
                 </main>
             </div>
         </section>
@@ -381,12 +397,22 @@
         const sideStatus = document.getElementById('side-status');
         const panelStatus = document.getElementById('panel-status');
         const panelContent = document.getElementById('panel-content');
+        const panelPagination = document.getElementById('panel-pagination');
         const panelTitle = document.getElementById('panel-title');
         const panelSubtitle = document.getElementById('panel-subtitle');
+        const searchKeyword = document.getElementById('search-keyword');
+        const privacyFilter = document.getElementById('privacy-filter');
+        const pageSizeSelect = document.getElementById('page-size');
+        const searchButton = document.getElementById('search-button');
 
         const titles = {
             routes: ['共享路线', '可修改路线名称、隐私状态和点位 JSON。'],
             nfc: ['共享 NFC', '可修改名称、URL、包名与来源字段。']
+        };
+
+        const filters = {
+            routes: { query: '', privacyMode: 'all', page: 1, pageSize: 10 },
+            nfc: { query: '', page: 1, pageSize: 10 }
         };
 
         document.querySelectorAll('[data-tab]').forEach(button => {
@@ -414,6 +440,18 @@
             refreshButton.addEventListener('click', loadCurrentTab);
         }
 
+        if (searchButton) {
+            searchButton.addEventListener('click', () => {
+                filters[state.currentTab].query = searchKeyword.value.trim();
+                filters[state.currentTab].pageSize = Number(pageSizeSelect.value || '10');
+                filters[state.currentTab].page = 1;
+                if (state.currentTab === 'routes') {
+                    filters.routes.privacyMode = privacyFilter.value;
+                }
+                loadCurrentTab();
+            });
+        }
+
         function setStatus(target, message, type = '') {
             target.textContent = message || '';
             target.className = 'status' + (type ? ' ' + type : '');
@@ -423,6 +461,7 @@
             const [title, subtitle] = titles[state.currentTab];
             panelTitle.textContent = title;
             panelSubtitle.textContent = subtitle;
+            syncFilterControls();
         }
 
         async function login() {
@@ -472,7 +511,13 @@
         }
 
         async function loadRoutes() {
-            const response = await fetch('/api/admin/routes', { credentials: 'same-origin' });
+            const params = new URLSearchParams({
+                q: filters.routes.query,
+                privacyMode: filters.routes.privacyMode,
+                page: String(filters.routes.page),
+                pageSize: String(filters.routes.pageSize)
+            });
+            const response = await fetch(`/api/admin/routes?${params.toString()}`, { credentials: 'same-origin' });
             const payload = await response.json().catch(() => ({}));
             if (!response.ok) {
                 setStatus(panelStatus, payload.detail || '加载共享路线失败', 'error');
@@ -482,17 +527,24 @@
             const items = payload.items || [];
             if (!items.length) {
                 panelContent.innerHTML = '<div class="empty">当前没有共享路线记录。</div>';
+                renderPagination(payload.page || 1, payload.totalPages || 0, payload.total || 0);
                 setStatus(panelStatus, '加载完成', 'success');
                 return;
             }
 
             panelContent.innerHTML = items.map(route => renderRouteCard(route)).join('');
             bindRouteActions();
-            setStatus(panelStatus, `已加载 ${items.length} 条共享路线`, 'success');
+            renderPagination(payload.page || 1, payload.totalPages || 0, payload.total || 0);
+            setStatus(panelStatus, `已加载 ${items.length} 条共享路线，共 ${payload.total || items.length} 条`, 'success');
         }
 
         async function loadNfc() {
-            const response = await fetch('/api/admin/nfc', { credentials: 'same-origin' });
+            const params = new URLSearchParams({
+                q: filters.nfc.query,
+                page: String(filters.nfc.page),
+                pageSize: String(filters.nfc.pageSize)
+            });
+            const response = await fetch(`/api/admin/nfc?${params.toString()}`, { credentials: 'same-origin' });
             const payload = await response.json().catch(() => ({}));
             if (!response.ok) {
                 setStatus(panelStatus, payload.detail || '加载共享 NFC 失败', 'error');
@@ -502,13 +554,15 @@
             const items = payload.items || [];
             if (!items.length) {
                 panelContent.innerHTML = '<div class="empty">当前没有共享 NFC 记录。</div>';
+                renderPagination(payload.page || 1, payload.totalPages || 0, payload.total || 0);
                 setStatus(panelStatus, '加载完成', 'success');
                 return;
             }
 
             panelContent.innerHTML = items.map(entry => renderNfcCard(entry)).join('');
             bindNfcActions();
-            setStatus(panelStatus, `已加载 ${items.length} 条共享 NFC`, 'success');
+            renderPagination(payload.page || 1, payload.totalPages || 0, payload.total || 0);
+            setStatus(panelStatus, `已加载 ${items.length} 条共享 NFC，共 ${payload.total || items.length} 条`, 'success');
         }
 
         function renderRouteCard(route) {
@@ -693,6 +747,48 @@
 
         function escapeAttribute(value) {
             return escapeHtml(value).replaceAll('`', '&#96;');
+        }
+
+        function syncFilterControls() {
+            const current = filters[state.currentTab];
+            searchKeyword.value = current.query || '';
+            pageSizeSelect.value = String(current.pageSize || 10);
+            if (state.currentTab === 'routes') {
+                privacyFilter.classList.remove('hidden');
+                privacyFilter.value = filters.routes.privacyMode || 'all';
+            } else {
+                privacyFilter.classList.add('hidden');
+            }
+        }
+
+        function renderPagination(page, totalPages, total) {
+            if (!totalPages || totalPages <= 1) {
+                panelPagination.innerHTML = total ? `<span class="muted">共 ${total} 条</span>` : '';
+                panelPagination.classList.toggle('hidden', !total);
+                return;
+            }
+
+            panelPagination.classList.remove('hidden');
+            panelPagination.innerHTML = `
+                <span class="muted" style="padding: 10px 0;">第 ${page} / ${totalPages} 页，共 ${total} 条</span>
+                <button class="ghost" type="button" ${page <= 1 ? 'disabled' : ''} id="page-prev">上一页</button>
+                <button class="ghost" type="button" ${page >= totalPages ? 'disabled' : ''} id="page-next">下一页</button>
+            `;
+
+            const previous = document.getElementById('page-prev');
+            const next = document.getElementById('page-next');
+            if (previous) {
+                previous.addEventListener('click', () => {
+                    filters[state.currentTab].page = Math.max(1, page - 1);
+                    loadCurrentTab();
+                });
+            }
+            if (next) {
+                next.addEventListener('click', () => {
+                    filters[state.currentTab].page = Math.min(totalPages, page + 1);
+                    loadCurrentTab();
+                });
+            }
         }
 
         updatePanelHeader();

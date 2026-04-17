@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 
+from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 
 from app.application.interfaces.shared_nfc_repository import SharedNfcRepository
@@ -15,6 +16,36 @@ class SharedNfcSqlRepository(SharedNfcRepository):
     def list_entries(self) -> list[SharedNfcResponse]:
         rows = self._db.query(SharedNfcModel).order_by(SharedNfcModel.created_at.desc()).all()
         return [self._to_response(row) for row in rows]
+
+    def search_entries(
+        self,
+        query: str,
+        page: int,
+        page_size: int,
+    ) -> tuple[list[SharedNfcResponse], int]:
+        statement = self._db.query(SharedNfcModel)
+        normalized_query = (query or "").strip()
+        if normalized_query:
+            like_query = f"%{normalized_query}%"
+            statement = statement.filter(
+                or_(
+                    SharedNfcModel.id.like(like_query),
+                    SharedNfcModel.name.like(like_query),
+                    SharedNfcModel.url.like(like_query),
+                    SharedNfcModel.package_name.like(like_query),
+                    SharedNfcModel.source.like(like_query),
+                )
+            )
+
+        total = statement.with_entities(func.count(SharedNfcModel.id)).scalar() or 0
+        rows = (
+            statement
+            .order_by(SharedNfcModel.created_at.desc())
+            .offset((page - 1) * page_size)
+            .limit(page_size)
+            .all()
+        )
+        return [self._to_response(row) for row in rows], total
 
     def create_entry(self, payload: CreateSharedNfcRequest) -> SharedNfcResponse:
         now = int(datetime.now(timezone.utc).timestamp() * 1000)
