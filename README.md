@@ -1,107 +1,75 @@
 <p align="center">
-<img src="./docs/images/LOGO.png" height="80"/>
+  <img src="./docs/images/牢大.jpg" height="80" alt="Toolbox logo" />
 </p>
 
 <div align="center">
 
-[![GitHub stars](https://img.shields.io/github/stars/ZCShou/GoGoGo?logo=github)](https://github.com/ZCShou/GoGoGo/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/ZCShou/GoGoGo?logo=github)](https://github.com/ZCShou/GoGoGo/network)
-[![license](https://img.shields.io/github/license/ZCShou/GoGoGo)](https://github.com/ZCShou/GoGoGo/blob/master/LICENSE)
-[![GitHub Release](https://img.shields.io/github/v/release/ZCShou/GoGoGo?label=Release)](https://github.com/ZCShou/GoGoGo/releases)
-[![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
-</div>
-<div align="center">
+[![GitHub stars](https://img.shields.io/github/stars/Acooldog/fuckschoolrun?style=for-the-badge&logo=github)](https://github.com/Acooldog/fuckschoolrun/stargazers)
+[![GitHub downloads](https://img.shields.io/github/downloads/Acooldog/fuckschoolrun/total?style=for-the-badge)](https://github.com/Acooldog/fuckschoolrun/releases)
+[![GPLv3 License](https://img.shields.io/badge/license-GPLv3-blue?style=for-the-badge)](https://www.gnu.org/licenses/gpl-3.0.html)
 
-[![Build Check](https://github.com/ZCShou/GoGoGo/actions/workflows/build-check.yml/badge.svg)](https://github.com/ZCShou/GoGoGo/actions/workflows/build-check.yml)
-[![CodeQL](https://github.com/ZCShou/GoGoGo/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/ZCShou/GoGoGo/actions/workflows/codeql-analysis.yml)
 </div>
 
-<div align="center">
-影梭 - 用于 Android 8.0+ 的无需 ROOT 权限的虚拟定位 APP
-</div>
+# 牢大肘击校园跑
 
-## 简介
-&emsp;&emsp;影梭是一个基于 Android 调试 API + 百度地图及定位 SDK 实现的安卓定位修改工具，并且同时实现了一个可以自由控制移动的摇杆。使用影梭，不需要 ROOT 权限就可以随意修改自己的当前位置以及模拟移动。
+一个独立维护的 Android 虚拟定位、路线模拟与 NFC 工具项目，面向 Android 8.0+。
 
-1. 源码仓库：[Github](https://github.com/ZCShou/GoGoGo)（推荐）、[Gitee](https://gitee.com/itexp/gogogo)（镜像）
-2. 下载地址：[Github](https://github.com/ZCShou/GoGoGo/releases)（推荐）、[Gitee](https://gitee.com/itexp/gogogo/releases)（镜像）
+## 当前能力
 
-## 警告一
-&emsp;&emsp;**最近，有网友直接白嫖影梭后改名为标枪定位，然后添加广告（除了加广告，功能没有任何改变），但是，没有按照 GPLv3 协议的要求进行开源（我已经联系过该网友进了提醒，但并没有收到回复），在此提醒：**
-1. **开源 ≠ 白嫖，请遵循开源协议**
-2. **GPL 的法律效力在国内相关诉讼案例很多，请自行搜索，权衡利弊。影梭保留追究相关侵权人员法律责任的所有权利！**
-3. **开源不易，且行且珍惜**
+- 路线绘制、地点搜索、本地保存、共享上传与下载
+- 路线模拟，支持记住上次速度、循环次数和最近路线
+- NFC 读取、模拟、共享与下载，支持记住上次 URL 与包名
+- 后端管理面板，可修改和删除用户上传的共享数据
+- 检测 Gitee 最新版本，显示更新日志和下载提示
 
-## 警告二
-&emsp;&emsp;**最近，有很多人将影梭用在校园运动类 APP（包括但不限于闪动校园、TakeTwo、运动世界校园等）中作弊，开发者也收到了很多人提问为何影梭定位并不起作用或者寻求对影梭的改进，在此提醒：**
-1. **影梭不支持任何校园运动类 APP 的作弊行为**
-2. **影梭开发者也不赞同采用任何形式在校园运动中作弊**
+## 操作说明
 
-## 背景
-&emsp;&emsp;之前在玩一款 VR 游戏：一起来捉妖。为了省事，就想有没有可以更改位置的 APP。经过一番摸索发现确实有不少可以修改位置的 APP。但是，绝大多数这种 APP 都是收费的，而且贼贵！
+1. 首页点击“操作提示”卡片，可以查看完整教程。
+2. 绘制路线时可先搜索地点，再点击地图绘制路线。
+3. 路线模拟默认值为 `15m/s`、循环 `100`，并会自动记住上次配置。
+4. NFC 工具会自动记住上次输入的 URL、包名和来源。
+5. 如果学校有步频限制，可以在设置里面调整。
 
-&emsp;&emsp;我比较感兴趣的是这样的技术是如何实现的，因此，决定研究研究自己写一个！现在游戏已经弃坑了，但是技术不能丢。因此，将研究结果开源出来方便大家一起学习！但是请注意（重要的事情说三遍！否则后果自负）：
+## 本地配置
 
-1. 该 APP 仅仅是为了学习 Android + 百度地图的实现方法，请勿用于游戏作弊！
-2. 该 APP 仅仅是为了学习 Android + 百度地图的实现方法，请勿用于游戏作弊！
-3. 该 APP 仅仅是为了学习 Android + 百度地图的实现方法，请勿用于游戏作弊！
+请把本地敏感配置写在 `local.properties`：
 
-## 功能
-1. 定位修改
-2. 摇杆控制移动
-3. 历史记录
-4. 位置搜索
-5. 直接输入坐标
+```properties
+sdk.dir=C\:\\path\\to\\Android\\Sdk
+MAPS_API_KEY=your_baidu_android_ak
+MAPS_SAFE_CODE=SHA1;com.acooldog.toolbox
+SHARE_API_BASE_URL=http://your-server-host:8080/
+```
 
-## 截图
-![joystick.jpg](./docs/images/joystick.jpg)
-![search_history.jpg](./docs/images/search_history.jpg)
-![map.jpg](./docs/images/map.jpg)
+当前 APK 包名：
 
-## 用法
-1. 下载 APK 直接安装
-2. 启动影梭，赋予相关权限
-3. 单击地图位置，然后点击启动按钮
+```text
+com.acooldog.toolbox
+```
 
-## 文档
-&emsp;&emsp;由于本人并不是做移动开发的，很多功能代码写的都比较差。我也第一次写  Android APP，目前还处在学习中。。。此外，就一个简单的 APP，应该也不需要啥文档，开发过程中遇到的一些问题，我一般都会记录在个人博客中，具体参见：https://blog.csdn.net/zcshoucsdn/category_10559121.html
+## 构建文档
 
-&emsp;&emsp;如果有疑问可以直接搜索 ISSUE 或者 在上面直接提交问题。
+- [docs/build-guide.md](./docs/build-guide.md)
 
-## 参考
-&emsp;&emsp;由于本人也是个新手，纯属业余瞎搞，因此，在写影梭的过程中，参考了很多网友分享的技术文章、示例代码等。包括但不限于以下列出的几个：
-1. https://github.com/Hilaver/MockGPS
-2. https://github.com/bxxfighting/together-go
-3. https://github.com/P72B/Mocklation
+## 免责声明
 
-&emsp;&emsp;还有些 CSDN 上的文章，目前不记得地址了，如果您发现其中有直接引用或借鉴您的地方，请与我联系，我会再第一时间进行处理，谢谢！
+本项目仅供合法合规的开发、调试、学习与研究用途。
 
-## FAQ
-Q：为何不支持 Android 8.0 以下版本？
+- 请勿将本项目用于作弊、绕过平台规则、冒充第三方软件或其他违法违规用途。
+- 使用者应自行承担使用行为带来的全部后果。
+- 维护者不对因不当使用本项目造成的直接或间接损失承担责任。
 
-A：因为手里没有机器无法进行适配。。。
+## 开源协议
 
-Q：为何定位不是很稳定，偶尔会飘回真实位置？
+本项目继续遵循：
 
-A：这是是由于实现原理导致的，Android 调试 API 固有的问题。确切的说，应该是由于手机本身还开启了其他定位方式（例如，基站定位、wifi定位等）导致的
+- `GPL-3.0-only`
 
-Q：是否支持鸿蒙系统？
+## 上游说明
 
-A：经过测试，影梭可以在鸿蒙系统上正常运行。
+本项目已作为独立项目维护，但在 README 中保留来源说明：
 
-Q：为何在微信等腾讯系应用上定位不起作用？
-
-A：建议去问一下腾讯。
-
-Q：编译时 java 报错？
-
-A：Gradle 使用的 java 版本与 Android Studio 使用的不一致。Gradle 默认会在环境变量中搜索 JAVA_HOME 来确定 Java 位置。
-
-## 如何贡献
-1. FORK -> PR
-2. 加入影梭开发，共同完善
-
-## 许可证
-GPL-3.0-only © ZCShou
-
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FZCShou%2FGoGoGo.svg?type=large&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2FZCShou%2FGoGoGo?ref=badge_large&issueType=license)
+- 使用并演化自上游开源项目：`https://github.com/ZCShou/GoGoGo`
+- 本项目克隆自：`https://gitee.com/daoges_x/fuckschoolrun`
+- 原作者 B 站视频：`https://www.bilibili.com/video/BV1eqd7BjEC6`
+- 原作者 B 站主页：`https://space.bilibili.com/1492911803`
