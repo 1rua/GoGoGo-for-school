@@ -1,6 +1,4 @@
-<p align="center">
-  <img src="./docs/images/牢大.jpg" height="80" alt="Toolbox logo" />
-</p>
+
 
 <div align="center">
 
@@ -10,7 +8,7 @@
 
 </div>
 
-# 牢大肘击校园跑
+# 影梭 for 校园跑
 
 一个独立维护的 Android 虚拟定位、路线模拟与 NFC 工具项目，面向 Android 8.0+。
 
